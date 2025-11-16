@@ -39,7 +39,12 @@ class Settings(BaseSettings):
     jwt_expiration_hours: int = 24
     
     # CORS
-    cors_origins: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Get CORS origins as list"""
+        return [origin.strip() for origin in self.cors_origins.split(",")]
     
     # API Configuration
     max_requests_per_minute: int = 100
@@ -49,7 +54,8 @@ class Settings(BaseSettings):
     backend_url: str = "http://localhost:8000"
     
     class Config:
-        env_file = ".env"
+        env_file = "../.env"  # .env file is in parent directory
+        env_file_encoding = "utf-8"
         case_sensitive = False
 
 

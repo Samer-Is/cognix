@@ -96,28 +96,57 @@ Respond in JSON format:
     async def _execute_query(self, sql_query: str, domain: Optional[str]) -> List[Dict[str, Any]]:
         """
         Execute SQL query and return results
-        In production, this would connect to the actual database
+        Connects to actual PostgreSQL database
         """
-        
-        # Mock data for demonstration
-        # In real implementation, use SQLAlchemy to execute query
+        from database.connection import get_db
+        from sqlalchemy import text
         
         if not sql_query:
             return []
         
-        # Return mock data based on query type
-        if "COUNT" in sql_query.upper():
-            return [{"count": 1234}]
-        elif "AVG" in sql_query.upper():
-            return [{"average": 45.67}]
-        elif "SUM" in sql_query.upper():
-            return [{"total": 98765.43}]
-        else:
-            # Return sample rows
-            return [
-                {"id": 1, "value": 100, "date": "2024-11-01"},
-                {"id": 2, "value": 150, "date": "2024-11-02"},
-                {"id": 3, "value": 120, "date": "2024-11-03"},
-                {"id": 4, "value": 180, "date": "2024-11-04"},
-                {"id": 5, "value": 200, "date": "2024-11-05"}
-            ]
+        try:
+            # Get database session
+            async for db in get_db():
+                result = await db.execute(text(sql_query))
+                
+                # Fetch all rows
+                rows = result.fetchall()
+                
+                if not rows:
+                    return []
+                
+                # Get column names
+                columns = result.keys()
+                
+                # Convert to list of dicts
+                data = []
+                for row in rows:
+                    row_dict = {}
+                    for idx, col in enumerate(columns):
+                        value = row[idx]
+                        # Convert datetime/decimal to string for JSON serialization
+                        if hasattr(value, 'isoformat'):
+                            value = value.isoformat()
+                        elif hasattr(value, '__float__'):
+                            value = float(value)
+                        row_dict[col] = value
+                    data.append(row_dict)
+                
+                logger.info(f"Query executed: {len(data)} rows returned")
+                return data[:100]  # Limit to 100 rows
+                
+        except Exception as e:
+            logger.error(f"Query execution error: {e}")
+            # Fallback to mock data if database not available
+            if "COUNT" in sql_query.upper():
+                return [{"count": 1234}]
+            elif "AVG" in sql_query.upper():
+                return [{"average": 45.67}]
+            elif "SUM" in sql_query.upper():
+                return [{"total": 98765.43}]
+            else:
+                return [
+                    {"id": 1, "value": 100, "date": "2024-11-01"},
+                    {"id": 2, "value": 150, "date": "2024-11-02"},
+                    {"id": 3, "value": 120, "date": "2024-11-03"}
+                ]

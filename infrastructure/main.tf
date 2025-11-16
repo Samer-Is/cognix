@@ -11,11 +11,13 @@ terraform {
     }
   }
   
-  backend "s3" {
-    bucket = "cognix-terraform-state"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
-  }
+  # Using local backend for initial deployment
+  # Uncomment S3 backend after initial setup
+  # backend "s3" {
+  #   bucket = "cognix-terraform-state"
+  #   key    = "terraform.tfstate"
+  #   region = "us-east-1"
+  # }
 }
 
 provider "aws" {

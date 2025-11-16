@@ -116,7 +116,7 @@ class UploadedFile(Base):
     status = Column(String(50), default="processing")  # processing, ready, failed
     num_chunks = Column(Integer)
     embedding_status = Column(String(50))
-    metadata = Column(JSON)
+    file_metadata = Column(JSON)  # Renamed from 'metadata' to avoid SQLAlchemy conflict
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     user = relationship("User")

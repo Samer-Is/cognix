@@ -3,11 +3,15 @@ RAG (Retrieval Augmented Generation) Service
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Dict, Any, List
 import boto3
 from utils.config import settings
+from services.document_processor import DocumentProcessor, SimpleVectorStore
 
 logger = logging.getLogger(__name__)
+
+# Global vector store instance
+_vector_store = SimpleVectorStore()
 
 
 class RAGService:
@@ -67,19 +71,53 @@ class RAGService:
             logger.error(f"S3 delete error: {e}")
             raise
     
-    async def process_file(self, file_id: int):
+    async def process_file(self, filename: str, file_content: bytes) -> Dict[str, Any]:
         """
         Process uploaded file for RAG
-        This would:
-        1. Download file from S3
-        2. Extract text content
-        3. Chunk the content
-        4. Generate embeddings
-        5. Store in vector database
+        1. Extract text content
+        2. Chunk the content
+        3. Store in vector database
         """
         
-        # Implementation would go here
-        # For now, this is a placeholder
+        logger.info(f"Processing file {filename} for RAG")
         
-        logger.info(f"Processing file {file_id} for RAG")
-        pass
+        # Process file based on type
+        result = DocumentProcessor.process_file(filename, file_content)
+        
+        if "error" in result:
+            logger.error(f"File processing error: {result['error']}")
+            return result
+        
+        # Add chunks to vector store
+        chunks = result.get("chunks", [])
+        if chunks:
+            _vector_store.add_documents(chunks)
+            logger.info(f"Added {len(chunks)} chunks to vector store")
+        
+        return {
+            "status": "success",
+            "chunks_processed": len(chunks),
+            "file_type": result.get("file_type"),
+            "metadata": {
+                k: v for k, v in result.items() 
+                if k not in ["chunks", "error"]
+            }
+        }
+    
+    async def search_documents(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+        """
+        Search for relevant document chunks
+        """
+        results = _vector_store.simple_search(query, top_k=top_k)
+        logger.info(f"Found {len(results)} relevant chunks for query: {query[:50]}")
+        return results
+    
+    def get_vector_store_stats(self) -> Dict[str, Any]:
+        """
+        Get statistics about the vector store
+        """
+        documents = _vector_store.get_all_documents()
+        return {
+            "total_documents": len(documents),
+            "document_types": list(set(doc.get("type", "unknown") for doc in documents))
+        }

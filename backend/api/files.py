@@ -43,12 +43,22 @@ async def upload_file(
         # Initialize RAG service
         rag_service = RAGService()
         
-        # Upload to S3 and process
-        s3_key = await rag_service.upload_file(
-            file_content=content,
-            filename=file.filename,
-            user_id=current_user.id
-        )
+        # Process file immediately
+        process_result = await rag_service.process_file(file.filename, content)
+        
+        if "error" in process_result:
+            raise HTTPException(status_code=400, detail=process_result["error"])
+        
+        # Upload to S3 (optional, for backup)
+        try:
+            s3_key = await rag_service.upload_file(
+                file_content=content,
+                filename=file.filename,
+                user_id=current_user.id
+            )
+        except Exception as e:
+            logger.warning(f"S3 upload failed (continuing anyway): {e}")
+            s3_key = f"local/{file.filename}"  # Fallback key
         
         # Create database record
         uploaded_file = UploadedFile(
@@ -57,15 +67,14 @@ async def upload_file(
             file_type=file_ext,
             file_size=file_size,
             s3_key=s3_key,
-            status="processing"
+            status="ready",  # Changed from "processing" since we process immediately
+            num_chunks=process_result.get("chunks_processed", 0),
+            embedding_status="completed"
         )
         
         db.add(uploaded_file)
         await db.commit()
         await db.refresh(uploaded_file)
-        
-        # Process file in background (this would be async)
-        # await rag_service.process_file(uploaded_file.id)
         
         logger.info(f"File uploaded: {file.filename} by user {current_user.username}")
         
@@ -114,6 +123,36 @@ async def list_files(
     return FileListResponse(files=file_list)
 
 
+@router.post("/search")
+async def search_documents(
+    query: str,
+    top_k: int = 5,
+    current_user: User = Depends(get_current_user)
+):
+    """Search through uploaded documents"""
+    
+    rag_service = RAGService()
+    results = await rag_service.search_documents(query, top_k=top_k)
+    
+    return {
+        "query": query,
+        "results": results,
+        "count": len(results)
+    }
+
+
+@router.get("/stats")
+async def get_rag_stats(
+    current_user: User = Depends(get_current_user)
+):
+    """Get RAG vector store statistics"""
+    
+    rag_service = RAGService()
+    stats = rag_service.get_vector_store_stats()
+    
+    return stats
+
+
 @router.delete("/{file_id}")
 async def delete_file(
     file_id: int,
@@ -135,9 +174,12 @@ async def delete_file(
     if not file:
         raise HTTPException(status_code=404, detail="File not found")
     
-    # Delete from S3
-    rag_service = RAGService()
-    await rag_service.delete_file(file.s3_key)
+    # Delete from S3 (if it was uploaded)
+    try:
+        rag_service = RAGService()
+        await rag_service.delete_file(file.s3_key)
+    except Exception as e:
+        logger.warning(f"S3 delete failed (continuing anyway): {e}")
     
     # Delete from database
     await db.execute(

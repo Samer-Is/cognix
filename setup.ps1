@@ -89,7 +89,7 @@ try {
         Write-Host "Database 'cognix' already exists" -ForegroundColor Yellow
     }
 } catch {
-    Write-Host "⚠️  PostgreSQL not found. You'll need to set up the database manually" -ForegroundColor Yellow
+    Write-Host "⚠️  PostgreSQL not found. You will need to set up the database manually" -ForegroundColor Yellow
     Write-Host "   Or use Docker: docker run --name cognix-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15" -ForegroundColor Cyan
 }
 

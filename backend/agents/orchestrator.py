@@ -19,6 +19,7 @@ from agents.supervisor_agent import SupervisorAgent
 from agents.data_manager_agent import DataManagerAgent
 from agents.data_engineer_agent import DataEngineerAgent
 from agents.analytics_expert_agent import AnalyticsExpertAgent
+from services.conversation_memory import get_conversation_memory
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +121,20 @@ class AgentOrchestrator:
         Process user message through agent workflow
         """
         
+        # Get conversation memory
+        memory = get_conversation_memory()
+        
+        # Add user message to memory
+        memory.add_message(
+            session_id=self.session_id,
+            role="user",
+            content=message,
+            metadata={"domain": self.domain}
+        )
+        
+        # Get conversation context for agents
+        context = memory.get_context_for_llm(self.session_id)
+        
         # Initialize state
         initial_state = {
             "user_message": message,
@@ -132,7 +147,7 @@ class AgentOrchestrator:
             "sql_query": None,
             "data": None,
             "visualization": None,
-            "metadata": {},
+            "metadata": {"conversation_context": context},
             "should_continue": True
         }
         
@@ -140,8 +155,22 @@ class AgentOrchestrator:
             # Execute workflow
             result = await self.graph.ainvoke(initial_state)
             
+            response = result.get("response", "")
+            
+            # Add assistant response to memory
+            memory.add_message(
+                session_id=self.session_id,
+                role="assistant",
+                content=response,
+                metadata={"domain": self.domain}
+            )
+            
+            # Track domain usage
+            if self.domain:
+                memory.track_domain_usage(self.user_id, self.domain)
+            
             return {
-                "message": result.get("response", ""),
+                "message": response,
                 "sql_query": result.get("sql_query"),
                 "data": result.get("data"),
                 "visualization": result.get("visualization"),
