@@ -1,0 +1,453 @@
+Intelligent Multi-Domain Data Analytics Platform
+Executive Summary
+You're building an AI-powered analytics platform with multi-agent architecture that provides intelligent business insights across multiple domains (Telecom, Banking, Digital Marketing, Healthcare, FMCG) through a conversational interface. The system features autonomous AI agents, predictive analytics, and real-time visualization capabilities - all deployable on AWS within a $20/month budget.
+Core Architecture
+Multi-Agent System
+
+Welcoming Agent - Handles greetings and general queries
+Data Analytics Supervisor - Orchestrates team, validates outputs, manages feedback loops
+Data Manager - Domain expert on database schema, KPIs, and data relationships
+Data Engineer - Executes data retrieval and query operations
+Analytics Expert - Generates insights, recommendations, and visualizations
+
+Key Features
+Analytics Capabilities:
+
+Predictive analytics and trend forecasting
+Anomaly detection with automated alerts
+Natural language to SQL conversion
+Sentiment analysis for customer feedback
+Automated proactive insights
+
+Data Management:
+
+5 domains with 10+ tables each containing industry-specific KPIs
+AI-generated demo data in CSV format
+RAG (Retrieval Augmented Generation) for custom file uploads
+Multi-user authentication with activity tracking
+
+Visualizations:
+
+Interactive dashboards with drill-down
+Comparative cross-domain analysis
+Time-series trend analysis
+Geospatial mapping
+Custom chart builder
+
+Integrations:
+
+REST API endpoints
+Excel/Google Sheets/CRM connectors
+Webhook support for real-time updates
+
+Advanced Features:
+
+Agent conversation memory (short & long-term)
+Real-time agent interaction viewer
+Domain-aware agents with context sharing
+Feedback loop validation system
+
+Innovation Additions for Investment Appeal
+
+AI-Powered Data Quality Assistant - Automatically detects data inconsistencies, suggests data cleaning, and flags quality issues
+Business Impact Simulator - "What-if" scenarios to predict outcomes of business decisions using historical patterns
+Collaborative Insights Board - Team members can annotate, comment, and build on AI-generated insights
+Smart Alerts Engine - Context-aware notifications that learn user preferences over time
+Industry Benchmarking - Compare metrics against AI-generated industry standards and competitors
+Automated Report Generation - Schedule periodic reports with natural language summaries sent via email/Slack
+Voice Interface Option - Voice-to-text queries for hands-free analytics access
+Mobile-First PWA - Progressive web app for on-the-go analytics access
+Explainable AI Layer - Transparent reasoning showing how AI arrived at conclusions
+Data Monetization Insights - Identify valuable data patterns that could be packaged as market intelligence
+
+AWS Cloud Architecture (< $20/month)
+
+Compute: AWS Lambda (serverless) - $0-5/month
+Database: DynamoDB (free tier) or RDS PostgreSQL (t3.micro) - $0-8/month
+Storage: S3 for CSV files - $0-2/month
+API: API Gateway - $0-3/month
+Authentication: Cognito - $0-2/month
+AI: Bedrock/SageMaker on-demand - Variable based on usage
+
+
+Cursor IDE Prompt for Development
+markdown# PROJECT: Intelligent Multi-Domain Data Analytics Platform with AI Agents
+
+Build a complete, production-ready AI-powered analytics platform with the following specifications:
+
+## CRITICAL REQUIREMENTS
+- Write ALL code including IaC (Infrastructure as Code) for AWS deployment
+- Use Terraform or AWS CDK for infrastructure - no manual AWS console work
+- Stay within $20/month AWS budget using serverless architecture
+- Keep architecture simple and pragmatic - avoid over-engineering
+- Every component must be functional, not placeholder code
+
+## TECH STACK
+**Backend:**
+- Python 3.11+ with FastAPI
+- LangGraph for multi-agent orchestration
+- SQLAlchemy for database operations
+- Anthropic Claude API for AI agents (use claude-sonnet-4-20250514)
+- Pandas for data processing
+
+**Frontend:**
+- React 18+ with TypeScript
+- Tailwind CSS for styling
+- Recharts for visualizations
+- React Query for state management
+- Socket.io for real-time agent viewer
+
+**Infrastructure (AWS):**
+- Lambda functions for all backend logic
+- API Gateway for REST endpoints
+- DynamoDB for user management and activity logs
+- RDS PostgreSQL (t3.micro) for analytics data
+- S3 for CSV storage and RAG documents
+- Cognito for authentication
+- CloudWatch for logging
+
+**AI/ML:**
+- Anthropic Claude API for all agents
+- LangChain for RAG implementation
+- Vector database (in-memory or lightweight) for embeddings
+
+## ARCHITECTURE
+
+### 1. MULTI-AGENT SYSTEM (LangGraph)
+Create 5 specialized agents with conversation memory:
+
+**Agent 1: Welcoming Agent**
+- Handles greetings, general queries, platform navigation
+- Personality: Friendly, helpful, concise
+- Routes business queries to Data Analytics Supervisor
+
+**Agent 2: Data Analytics Supervisor**
+- Creates execution plans for complex queries
+- Assigns tasks to team members
+- Validates all outputs from other agents
+- Implements feedback loops if answers are inaccurate
+- Makes final decision on response quality
+- Memory: Remembers user preferences and past query patterns
+
+**Agent 3: Data Manager**
+- Expert on all database schemas across 5 domains
+- Knows every table, column, KPI, and data relationship
+- Provides metadata and data context to other agents
+- Memory: Tracks which data sources are most relevant per domain
+
+**Agent 4: Data Engineer**
+- Converts natural language to SQL queries
+- Executes data retrieval operations
+- Handles data transformations and aggregations
+- Memory: Optimizes repeated query patterns
+
+**Agent 5: Analytics Expert**
+- Performs statistical analysis and predictive modeling
+- Generates insights, trends, and recommendations
+- Creates visualization specifications for frontend
+- Detects anomalies and patterns
+- Memory: Builds knowledge of domain-specific analytical patterns
+
+**Agent Communication:**
+- All agents share context about current domain selection
+- Agents communicate through LangGraph state management
+- Real-time agent conversation log streamed to UI viewer
+- Implement short-term (conversation) and long-term (user history) memory
+
+### 2. DOMAIN DATA GENERATION
+Generate realistic CSV datasets for 5 domains:
+
+**Telecom Domain (10 tables):**
+- customer_profiles, call_records, data_usage, billing, network_performance, churn_data, device_inventory, complaints, promotions, regional_coverage
+- KPIs: ARPU, churn rate, network uptime, data consumption, customer satisfaction
+
+**Banking Domain (10 tables):**
+- accounts, transactions, loans, credit_cards, customers, branches, atm_usage, fraud_alerts, investments, customer_service_logs
+- KPIs: Transaction volume, loan default rate, customer acquisition cost, NPS, fraud detection rate
+
+**Digital Marketing Domain (10 tables):**
+- campaigns, ad_performance, website_traffic, conversions, email_metrics, social_media, seo_rankings, customer_journey, ab_tests, budgets
+- KPIs: CTR, conversion rate, CAC, ROAS, engagement rate, bounce rate
+
+**Healthcare Domain (10 tables):**
+- patients, appointments, medical_records, prescriptions, lab_results, staff, departments, billing, insurance_claims, equipment
+- KPIs: Patient wait time, bed occupancy, readmission rate, treatment outcomes, staff utilization
+
+**FMCG Domain (10 tables):**
+- products, inventory, sales, distributors, retailers, promotions, supply_chain, market_research, customer_feedback, pricing
+- KPIs: Sales velocity, inventory turnover, market share, distribution coverage, profit margin
+
+Each table should have:
+- 500-2000 rows of realistic data
+- Proper relationships (foreign keys)
+- Timestamps for time-series analysis
+- Mix of numerical and categorical data
+
+### 3. CORE FEATURES IMPLEMENTATION
+
+**Natural Language to SQL:**
+- Use Claude to parse user questions
+- Data Manager provides schema context
+- Data Engineer generates and executes SQL
+- Include query validation and error handling
+
+**Predictive Analytics:**
+- Implement time-series forecasting (ARIMA, Prophet, or simple regression)
+- Trend detection algorithms
+- Seasonal pattern recognition
+
+**Anomaly Detection:**
+- Statistical outlier detection (Z-score, IQR)
+- Automated alerts for critical deviations
+- Threshold-based monitoring
+
+**Sentiment Analysis:**
+- Analyze customer feedback text fields
+- Use Claude for nuanced sentiment extraction
+- Aggregate sentiment scores by category
+
+**RAG Implementation:**
+- Allow users to upload PDF/DOCX/CSV files
+- Create embeddings and store in vector database
+- Query custom documents alongside structured data
+- Use LangChain for document processing
+
+**Visualizations:**
+- Generate chart specifications (type, data, config) in backend
+- Frontend renders using Recharts
+- Support: line, bar, pie, scatter, heatmap, geo maps
+- Interactive filters and drill-down
+
+### 4. INTEGRATIONS
+
+**API Endpoints:**
+```
+POST /api/chat - Main conversational endpoint
+GET /api/domains - List available domains
+POST /api/domain/select - Switch active domain
+POST /api/upload - RAG file upload
+GET /api/insights - Get automated insights
+POST /api/query - Direct data query
+GET /api/agent-logs - Real-time agent communications
+WebSocket /ws/agents - Live agent activity stream
+```
+
+**External Integrations (design for future):**
+- REST endpoints for CRM/ERP systems
+- Webhook receivers for real-time data updates
+- OAuth for Google Sheets integration
+- Excel file parser
+
+### 5. USER MANAGEMENT & ACTIVITY TRACKING
+
+**Authentication:**
+- AWS Cognito user pools
+- JWT token-based auth
+- Role-based access control (Admin, Analyst, Viewer)
+
+**Activity Logging (DynamoDB):**
+- Log every query with timestamp
+- Track domain switches
+- Record agent interactions
+- Store user feedback on insights
+- Analytics on platform usage patterns
+
+**User Features:**
+- Personal dashboards
+- Saved queries
+- Favorite visualizations
+- Notification preferences
+
+### 6. AWS INFRASTRUCTURE (Terraform/CDK Code)
+
+**Lambda Functions:**
+- chat_handler: Main conversational endpoint
+- data_query: Execute SQL and return results
+- file_processor: RAG document processing
+- insight_generator: Automated analytics
+- agent_orchestrator: LangGraph coordinator
+
+**API Gateway:**
+- REST API with CORS enabled
+- WebSocket API for real-time features
+- Request throttling (1000 req/min per user)
+
+**Databases:**
+- RDS PostgreSQL (t3.micro, 20GB): Analytics data
+- DynamoDB: User profiles, activity logs, agent memory
+- S3 buckets: CSV files, uploaded documents, static assets
+
+**Security:**
+- IAM roles with least privilege
+- Secrets Manager for API keys
+- VPC for RDS (optional, adds cost)
+- HTTPS only
+
+**Monitoring:**
+- CloudWatch logs for all Lambdas
+- Alarms for error rates and costs
+- X-Ray for tracing (optional)
+
+**Cost Optimization:**
+- Lambda with 512MB memory (adjust based on usage)
+- RDS auto-pause after 5 minutes idle (if Aurora Serverless)
+- S3 lifecycle policies for old files
+- CloudWatch log retention: 7 days
+
+### 7. FRONTEND IMPLEMENTATION
+
+**Main Chat Interface:**
+- Clean, modern design (inspired by Claude.ai)
+- Message bubbles with agent avatars
+- Loading states with agent thinking indicators
+- Inline chart rendering
+- Code blocks for SQL queries (syntax highlighted)
+- Export conversation as PDF
+
+**Domain Selector:**
+- Dropdown or card-based selection
+- Show domain icons and descriptions
+- Display KPI count per domain
+- Persist selection across sessions
+
+**Agent Interaction Viewer (Side Panel):**
+- Collapsible panel showing real-time agent comms
+- Color-coded by agent role
+- Expandable conversation threads
+- Shows supervisor feedback loops
+- Toggle on/off
+
+**Dashboard View:**
+- Grid of key metrics for selected domain
+- Quick access to common queries
+- Recent insights carousel
+- Scheduled reports list
+
+**File Upload Zone:**
+- Drag-and-drop CSV/PDF/DOCX
+- Progress indicator
+- Preview uploaded documents
+- RAG status indicator
+
+### 8. ADVANCED FEATURES
+
+**Conversation Memory:**
+- Store chat history in DynamoDB
+- Retrieve relevant past conversations for context
+- User can reference "last week's analysis"
+- Clear conversation option
+
+**Feedback Loops:**
+- User can rate responses (thumbs up/down)
+- Supervisor agent adjusts based on feedback
+- Learn from incorrect outputs
+- Improve query interpretation over time
+
+**Smart Alerts:**
+- Configure threshold-based alerts
+- Email/in-app notifications
+- Weekly digest of insights
+- Anomaly alerts
+
+**What-If Scenarios:**
+- Allow users to modify assumptions
+- Re-run predictive models with new inputs
+- Compare scenarios side-by-side
+
+**Explainable AI:**
+- Show reasoning for every insight
+- Display data sources used
+- Explain statistical methods applied
+- Confidence scores for predictions
+
+## DELIVERABLES
+
+1. **Backend Code:**
+   - FastAPI application with all endpoints
+   - LangGraph multi-agent system
+   - Database models and migrations
+   - Data generation scripts (5 domains × 10 tables)
+   - RAG pipeline
+   - Analytics algorithms
+
+2. **Frontend Code:**
+   - React application with all components
+   - Chat interface
+   - Visualization library integration
+   - Domain selector
+   - Agent viewer panel
+   - Responsive design
+
+3. **Infrastructure Code:**
+   - Complete Terraform/CDK files for AWS
+   - Deployment scripts
+   - Environment configuration
+   - Database initialization scripts
+
+4. **Documentation:**
+   - README with setup instructions
+   - API documentation
+   - Architecture diagram
+   - Cost breakdown
+   - Scaling considerations
+
+5. **Testing:**
+   - Unit tests for critical functions
+   - Integration tests for API endpoints
+   - Sample queries for each domain
+
+## IMPLEMENTATION PHASES
+
+**Phase 1: Foundation (Build First)**
+- AWS infrastructure setup with IaC
+- Database schemas and sample data generation
+- Basic FastAPI backend with authentication
+- Simple React frontend with chat UI
+
+**Phase 2: Core Agents**
+- Implement 5 agents with LangGraph
+- Natural language to SQL functionality
+- Basic analytics and visualizations
+- Agent viewer panel
+
+**Phase 3: Advanced Analytics**
+- Predictive models
+- Anomaly detection
+- Sentiment analysis
+- RAG implementation
+
+**Phase 4: Polish & Features**
+- Conversation memory
+- Feedback loops
+- Smart alerts
+- Dashboard enhancements
+
+## CODE QUALITY STANDARDS
+- Type hints for all Python functions
+- TypeScript for all React components
+- Error handling with user-friendly messages
+- Logging at INFO level minimum
+- No hardcoded credentials (use environment variables)
+- Comments for complex logic
+- Modular, reusable code structure
+
+## CONSTRAINTS
+- Total AWS monthly cost: Under $20
+- API response time: < 5 seconds for simple queries
+- Support 50 concurrent users minimum
+- CSV generation time: < 30 seconds per domain
+- Mobile-responsive design
+- Works on Chrome, Firefox, Safari
+
+## GETTING STARTED
+Generate the complete codebase with:
+1. Project structure and configuration files
+2. All backend Python code
+3. All frontend React/TypeScript code
+4. Complete AWS infrastructure code (Terraform or CDK)
+5. Data generation scripts with realistic data
+6. Deployment documentation
+
+Start with the most critical path: AWS setup → Backend API → Agent system → Frontend → Advanced features.
+
+Make this production-ready, not a prototype. Every feature should be functiona
